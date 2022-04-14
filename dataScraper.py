@@ -58,6 +58,8 @@ for id in ids:
         longs.append(coord[1])
 
     print(f'Sharks Retrieved: {count}\r', end='')
+
+print(f'Sharks Retrieved: {count}')
     
 df = pd.DataFrame()
 
@@ -75,7 +77,9 @@ africa = df.loc[df['lat'] > 0]
 plt.scatter(americas['lat'], americas['long'], c=americas['month'], cmap='twilight_shifted', alpha=0.2, s=5)
 plt.gcf().set_size_inches(20, 20)
 plt.title('Sharks in the Americas')
-plt.savefig('americas.png')
+plt.savefig('americas.pdf')
+
+print("Americas Graph Created")
 
 # clear the graph
 plt.clf()
@@ -83,7 +87,14 @@ plt.clf()
 plt.scatter(africa['lat'], africa['long'], c=africa['month'], cmap='twilight_shifted', alpha=0.2, s=5)
 plt.gcf().set_size_inches(20, 20)
 plt.title('Sharks in Africa')
-plt.savefig('africa.png')
+plt.savefig('africa.pdf')
+
+print("Africa Graph Created")
 
 americas.to_csv('americas.csv', index=False)
 africa.to_csv('africa.csv', index=False)
+
+print("Output pings to americas.csv and africa.csv")
+
+print(f'Shark pings in the Americas: {americas.shape[0]}')
+print(f'Sharks pings in Africa: {africa.shape[0]}')
