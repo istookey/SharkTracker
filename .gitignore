@@ -1,0 +1,4 @@
+# Any files that may be created by the python notebook
+*.png
+*.jpeg
+*.csv
