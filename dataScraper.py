@@ -4,14 +4,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-import sklearn
-import sys
-from sklearn.linear_model import LogisticRegression as lr
-from sklearn.tree import DecisionTreeClassifier as dt
-from sklearn.model_selection import train_test_split as tts
-from sklearn.model_selection import cross_val_score as cvs
-from sklearn.preprocessing import MultiLabelBinarizer
-
 req_string = "http://mapotic.com/api/v1/maps/3413/pois/{}/motion/with-meta/?format=json"
 
 db_string = "http://mapotic.com/api/v1/maps/3413/pois.geojson/?format=json"
@@ -53,6 +45,7 @@ for id in ids:
         })
 
     response = urllib.request.urlopen(req)
+    count += 1
 
     json_data = json.loads(response.read())
 
@@ -64,12 +57,8 @@ for id in ids:
         lats.append(coord[0])
         longs.append(coord[1])
 
-    if (count % 10 == 0):
-        print(count)
-    count += 1
+    print(f'Sharks Retrieved: {count}\r', end='')
     
-print(count)
-
 df = pd.DataFrame()
 
 df['lat'] = lats
@@ -78,25 +67,23 @@ df['time'] = times
 df['time'] = pd.to_datetime(df['time'])
 
 df['month'] = df['time'].dt.month
-#df.head()
 
 americas = df.loc[df['lat'] < 0]
 
 africa = df.loc[df['lat'] > 0]
 
-tree = dt(random_state=42)
-lr_model = lr(random_state=42)
+plt.scatter(americas['lat'], americas['long'], c=americas['month'], cmap='twilight_shifted', alpha=0.2, s=5)
+plt.gcf().set_size_inches(20, 20)
+plt.title('Sharks in the Americas')
+plt.savefig('americas.png')
 
-americas['coord'] = americas[['lat', 'long']].apply(tuple, axis=1)
+# clear the graph
+plt.clf()
 
-print("Processing...")
+plt.scatter(africa['lat'], africa['long'], c=africa['month'], cmap='twilight_shifted', alpha=0.2, s=5)
+plt.gcf().set_size_inches(20, 20)
+plt.title('Sharks in Africa')
+plt.savefig('africa.png')
 
-coords = MultiLabelBinarizer().fit_transform(americas['coord'])
-
-print("Training Tree...")
-
-cvs(tree, np.array(americas['month']).reshape(-1,1), coords, cv=5, verbose=1, n_jobs=-1)
-
-# print("Training Logistic Regression...")
-
-# cvs(lr_model, np.array(americas['month']).reshape(-1,1), coords, cv=5, verbose=1, n_jobs=-1)
+americas.to_csv('americas.csv', index=False)
+africa.to_csv('africa.csv', index=False)
