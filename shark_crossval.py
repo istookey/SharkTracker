@@ -19,32 +19,42 @@ africa = pd.read_csv('africa.csv')
 
 tree = dt(random_state=42)
 lr_model = lr(random_state=42, max_iter=100000, solver='lbfgs')
-rf_model = rf(random_state=42, n_estimators=1000, class_weight='balanced')
+rf_model = rf(random_state=42, n_estimators=100, class_weight='balanced')
 
 americas['coord'] = americas[['lat', 'long']].apply(tuple, axis=1)
 americas['time'] = pd.to_datetime(americas['time'])
 americas['time'] = americas['time']
 americas['time'] = americas['time'].apply(lambda x: x.value)
 
-print(americas.dtypes)
+print("Training Americas Tree...")
 
-print(americas['time'])
+# cvs(tree, np.array(americas['month']).reshape(-1,1), coords, cv=5, verbose=0, n_jobs=-1)
+print(f"Max Score: {cvs(tree, americas.drop(['month', 'coord', 'name', 'id', 'time'], axis=1), np.array(americas['month']).reshape(-1,1), cv=10, verbose=0, n_jobs=-1).max()}")
 
-print("Processing...")
+print("Training Americas Logistic Regression...")
 
-coords = MultiLabelBinarizer().fit_transform(americas['coord'])
+print(f"Max Score: {cvs(lr_model, americas.drop(['month', 'coord', 'name', 'id', 'time'], axis=1), np.array(americas['month']), cv=10, verbose=0, n_jobs=-1).max()}")
 
-print("Training Tree...")
+print("Training Americas Random Forest...")
 
-# cvs(tree, np.array(americas['month']).reshape(-1,1), coords, cv=5, verbose=1, n_jobs=-1)
-print(cvs(tree, americas.drop(['month', 'coord', 'name', 'id', 'time'], axis=1), np.array(americas['month']).reshape(-1,1), cv=10, verbose=1, n_jobs=-1))
+print(f"Max Score: {cvs(rf_model, americas.drop(['month', 'coord', 'name', 'id', 'time'], axis=1), np.array(americas['month']), cv=10, verbose=0, n_jobs=-1).max()}")
 
-print("Training Logistic Regression...")
+# cvs(lr_model, np.array(americas['month']).reshape(-1,1), coords, cv=5, verbose=0, n_jobs=-1)
 
-print(cvs(lr_model, americas.drop(['month', 'coord', 'name', 'id', 'time'], axis=1), np.array(americas['month']), cv=10, verbose=1, n_jobs=-1))
+africa['coord'] = africa[['lat', 'long']].apply(tuple, axis=1)
+africa['time'] = pd.to_datetime(africa['time'])
+africa['time'] = africa['time']
+africa['time'] = africa['time'].apply(lambda x: x.value)
 
-print("Training Random Forest...")
+print("Training Africa Tree...")
 
-print(cvs(rf_model, americas.drop(['month', 'coord', 'name', 'id', 'time'], axis=1), np.array(americas['month']), cv=10, verbose=1, n_jobs=-1))
+# cvs(tree, np.array(americas['month']).reshape(-1,1), coords, cv=5, verbose=0, n_jobs=-1)
+print(f"Max Score: {cvs(tree, africa.drop(['month', 'coord', 'name', 'id', 'time'], axis=1), np.array(africa['month']).reshape(-1,1), cv=10, verbose=0, n_jobs=-1).max()}")
 
-# cvs(lr_model, np.array(americas['month']).reshape(-1,1), coords, cv=5, verbose=1, n_jobs=-1)
+print("Training Africa Logistic Regression...")
+
+print(f"Max Score: {cvs(lr_model, africa.drop(['month', 'coord', 'name', 'id', 'time'], axis=1), np.array(africa['month']), cv=10, verbose=0, n_jobs=-1).max()}")
+
+print("Training Africa Random Forest...")
+
+print(f"Max Score: {cvs(rf_model, africa.drop(['month', 'coord', 'name', 'id', 'time'], axis=1), np.array(africa['month']), cv=10, verbose=0, n_jobs=-1).max()}")
