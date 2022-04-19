@@ -9,6 +9,7 @@ import sys
 from sklearn.linear_model import LogisticRegression as lr
 from sklearn.tree import DecisionTreeClassifier as dt
 from sklearn.ensemble import RandomForestClassifier as rf
+from sklearn.ensemble import GradientBoostingClassifier as gbc
 from sklearn.model_selection import train_test_split as tts
 from sklearn.model_selection import cross_val_score as cvs
 from sklearn.preprocessing import MultiLabelBinarizer
@@ -20,6 +21,7 @@ africa = pd.read_csv('africa.csv')
 tree = dt(random_state=42)
 lr_model = lr(random_state=42, max_iter=100000, solver='lbfgs')
 rf_model = rf(random_state=42, n_estimators=100, class_weight='balanced')
+gb = gbc(random_state=42, learning_rate=0.01, n_estimators=1000, subsample=0.8)
 
 americas['coord'] = americas[['lat', 'long']].apply(tuple, axis=1)
 americas['time'] = pd.to_datetime(americas['time'])
@@ -38,6 +40,10 @@ print(f"Max Score: {cvs(lr_model, americas.drop(['month', 'coord', 'name', 'id',
 print("Training Americas Random Forest...")
 
 print(f"Max Score: {cvs(rf_model, americas.drop(['month', 'coord', 'name', 'id', 'time'], axis=1), np.array(americas['month']), cv=10, verbose=0, n_jobs=-1).max()}")
+
+print("Training Americas Gradient Boosting...")
+
+print(f"Max Score: {cvs(gb, americas.drop(['month', 'coord', 'name', 'id', 'time'], axis=1), np.array(americas['month']), cv=10, verbose=1, n_jobs=-1).max()}")
 
 # cvs(lr_model, np.array(americas['month']).reshape(-1,1), coords, cv=5, verbose=0, n_jobs=-1)
 
