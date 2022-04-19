@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv('americas.csv')
+df = pd.read_csv('africa.csv')
 
 min_lat = df['lat'].min()
 min_lon = df['long'].min()
@@ -26,4 +26,5 @@ m.drawstates()
 m.scatter(df['long'], df['lat'], c=df['month'], cmap='twilight_shifted', latlon=True, alpha=0.25, s=3)
 
 plt.gcf().set_size_inches(20, 20)
-plt.savefig('americas_mapped.pdf')
+plt.savefig('africa_mapped.pdf')
+# plt.show()
